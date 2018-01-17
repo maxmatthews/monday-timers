@@ -328,11 +328,22 @@ class App extends Component {
 											? "table-success"
 											: ""} ${timerRunning ? "" : "table-warning"}`}
 									>
-										<td className="text-right">{pulse.pulse.name}</td>
-										<td className="text-center">
+										<td
+											className="text-right"
+											style={{ verticalAlign: "middle" }}
+										>
+											{pulse.pulse.name}
+										</td>
+										<td
+											className="text-center"
+											style={{ verticalAlign: "middle" }}
+										>
 											{pulse.column_values[4].value}
 										</td>
-										<td className="text-center">
+										<td
+											className="text-center"
+											style={{ verticalAlign: "middle" }}
+										>
 											{this.state[`running${pulse.pulse.id}`]
 												? this.state[`running${pulse.pulse.id}`]
 												: Math.round(pulse.column_values[5].value * 1000) /
