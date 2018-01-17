@@ -1,0 +1,1 @@
+This isn't quite ready for public use as it requires a specific board format, but eventually this will be a simple companion to Monday (formerly dapulse) to track the time you spend on each task.
