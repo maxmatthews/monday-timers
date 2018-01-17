@@ -10,6 +10,7 @@ class App extends Component {
 		this.state = {
 			apiKey: "",
 			boardID: "",
+			person: "",
 			boardData: [],
 			timers: {}
 		};
@@ -20,8 +21,11 @@ class App extends Component {
 		if (searchParams) {
 			this.setState(
 				{
-					apiKey: searchParams.get("apiKey"),
+					apiKey: searchParams.get("apiKey") ? searchParams.get("apiKey") : "",
+					person: searchParams.get("person") ? searchParams.get("person") : "",
 					boardID: searchParams.get("boardID")
+						? searchParams.get("boardID")
+						: ""
 				},
 				() => {
 					if (this.state.boardID && this.state.apiKey) {
@@ -43,13 +47,31 @@ class App extends Component {
 	}
 
 	async retrieveBoard() {
-		const response = await fetch(
-			`https://api.monday.com/v1/boards/${this.state
-				.boardID}/pulses.json?api_key=${this.state.apiKey}`
-		);
-		const parsedJSON = await response.json();
-		// console.log(parsedJSON);
-		this.setState({ boardData: parsedJSON });
+		this.setState({ boardData: [] });
+		let allDataRetrieved = false;
+		let pageOffset = 1;
+		while (!allDataRetrieved && pageOffset < 25) {
+			const response = await fetch(
+				`https://api.monday.com/v1/boards/${this.state
+					.boardID}/pulses.json?per_page=25&page=${pageOffset}&api_key=${this
+					.state.apiKey}`
+			);
+			const parsedJSON = await response.json();
+			this.setState({ boardData: [...this.state.boardData, ...parsedJSON] });
+
+			if (parsedJSON.length === 0) {
+				allDataRetrieved = true;
+			}
+			pageOffset++;
+		}
+
+		if (this.state.person) {
+			this.setState({
+				boardData: this.state.boardData.filter(pulse => {
+					return pulse.column_values[1].value.name === this.state.person;
+				})
+			});
+		}
 	}
 
 	formatData(data) {
@@ -253,6 +275,21 @@ class App extends Component {
 								value={this.state.apiKey}
 								onChange={evt => {
 									this.setState({ apiKey: evt.target.value });
+								}}
+							/>
+						</div>
+					</div>
+					<div className="col-sm">
+						<div className="input-group">
+							<div className="input-group-prepend">
+								<span className="input-group-text">Person:</span>
+							</div>
+							<input
+								className="form-control"
+								type="text"
+								value={this.state.person}
+								onChange={evt => {
+									this.setState({ person: evt.target.value });
 								}}
 							/>
 						</div>
