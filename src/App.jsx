@@ -245,6 +245,24 @@ class App extends Component {
 		}
 	}
 
+	async openBoard() {
+		const response = await fetch(
+			`https://api.monday.com:443/v1/boards/${this.state
+				.boardID}.json?api_key=${this.state.apiKey}`,
+			{
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				method: "GET"
+			}
+		);
+
+		const parsedJSON = await response.json();
+
+		window.open(parsedJSON.url);
+	}
+
 	render() {
 		return (
 			<div className="container">
@@ -299,6 +317,13 @@ class App extends Component {
 					<div className="col-sm text-center">
 						<button onClick={this.retrieveBoard} className="btn btn-primary">
 							Retrieve Board
+						</button>
+						<button
+							onClick={this.openBoard}
+							className="btn btn-primary"
+							style={{ marginLeft: 20 }}
+						>
+							Open Board
 						</button>
 					</div>
 				</div>
