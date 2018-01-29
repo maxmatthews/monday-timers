@@ -68,7 +68,10 @@ class App extends Component {
 		if (this.state.person) {
 			this.setState({
 				boardData: this.state.boardData.filter(pulse => {
-					return pulse.column_values[1].value.name === this.state.person;
+					return (
+						pulse.column_values[1].value &&
+						pulse.column_values[1].value.name === this.state.person
+					);
 				})
 			});
 		}
@@ -345,7 +348,9 @@ class App extends Component {
 								const timerRunning = !Object.keys(this.state.timers).includes(
 									pulse.pulse.id.toString()
 								);
-								const pulseDone = pulse.column_values[3].value.index === 1;
+								const pulseDone =
+									pulse.column_values[3].value &&
+									pulse.column_values[3].value.index === 1;
 								return (
 									<tr
 										key={pulse.pulse.id}
