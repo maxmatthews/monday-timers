@@ -453,6 +453,7 @@ class App extends Component {
 						</tbody>
 					</table>
 				) : null}
+				<div className="text-right">v. 1.0.1</div>
 			</div>
 		);
 	}
