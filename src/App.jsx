@@ -52,9 +52,11 @@ class App extends Component {
 		let pageOffset = 1;
 		while (!allDataRetrieved && pageOffset < 25) {
 			const response = await fetch(
-				`https://api.monday.com/v1/boards/${this.state
-					.boardID}/pulses.json?per_page=25&page=${pageOffset}&api_key=${this
-					.state.apiKey}`
+				`https://api.monday.com/v1/boards/${
+					this.state.boardID
+				}/pulses.json?per_page=25&page=${pageOffset}&api_key=${
+					this.state.apiKey
+				}`
 			);
 			const parsedJSON = await response.json();
 			this.setState({ boardData: [...this.state.boardData, ...parsedJSON] });
@@ -90,8 +92,9 @@ class App extends Component {
 	start(pulse) {
 		const pulseID = pulse.pulse.id;
 		fetch(
-			`https://api.monday.com:443/v1/boards/${this.state
-				.boardID}/columns/status/status.json?api_key=${this.state.apiKey}`,
+			`https://api.monday.com:443/v1/boards/${
+				this.state.boardID
+			}/columns/status/status.json?api_key=${this.state.apiKey}`,
 			{
 				headers: {
 					Accept: "application/json",
@@ -127,6 +130,39 @@ class App extends Component {
 						Math.round((timeWorkedAsHours + currentHours) * 1000) / 1000
 				});
 			}, 3000);
+
+			const intervalAutoupdateMonday = setInterval(() => {
+				if (!Object.keys(this.state.timers).includes(pulseID.toString())) {
+					clearInterval(intervalAutoupdateMonday);
+				}
+
+				const timeWorkedAsHours = moment
+					.duration(new Date() - this.state.timers[pulseID])
+					.asHours();
+
+				const currentHours = isNaN(parseFloat(pulse.column_values[5].value))
+					? 0
+					: parseFloat(pulse.column_values[5].value);
+
+				fetch(
+					`https://api.monday.com:443/v1/boards/${
+						this.state.boardID
+					}/columns/numbers7/numeric.json?api_key=${this.state.apiKey}`,
+					{
+						headers: {
+							Accept: "application/json",
+							"Content-Type": "application/x-www-form-urlencoded"
+						},
+						body: this.formatData({
+							board_id: this.state.boardID,
+							column_id: "numbers7",
+							pulse_id: pulseID,
+							value: currentHours + timeWorkedAsHours
+						}),
+						method: "PUT"
+					}
+				);
+			}, 60 * 1000 * 3);
 		});
 	}
 
@@ -134,8 +170,9 @@ class App extends Component {
 		const pulseID = pulse.pulse.id;
 
 		fetch(
-			`https://api.monday.com:443/v1/boards/${this.state
-				.boardID}/columns/status/status.json?api_key=${this.state.apiKey}`,
+			`https://api.monday.com:443/v1/boards/${
+				this.state.boardID
+			}/columns/status/status.json?api_key=${this.state.apiKey}`,
 			{
 				headers: {
 					Accept: "application/json",
@@ -166,8 +203,9 @@ class App extends Component {
 			: parseFloat(pulse.column_values[5].value);
 
 		fetch(
-			`https://api.monday.com:443/v1/boards/${this.state
-				.boardID}/columns/numbers7/numeric.json?api_key=${this.state.apiKey}`,
+			`https://api.monday.com:443/v1/boards/${
+				this.state.boardID
+			}/columns/numbers7/numeric.json?api_key=${this.state.apiKey}`,
 			{
 				headers: {
 					Accept: "application/json",
@@ -199,8 +237,9 @@ class App extends Component {
 		const pulseID = pulse.pulse.id;
 
 		fetch(
-			`https://api.monday.com:443/v1/boards/${this.state
-				.boardID}/columns/status/status.json?api_key=${this.state.apiKey}`,
+			`https://api.monday.com:443/v1/boards/${
+				this.state.boardID
+			}/columns/status/status.json?api_key=${this.state.apiKey}`,
 			{
 				headers: {
 					Accept: "application/json",
@@ -229,8 +268,9 @@ class App extends Component {
 				: parseFloat(pulse.column_values[5].value);
 
 			fetch(
-				`https://api.monday.com:443/v1/boards/${this.state
-					.boardID}/columns/numbers7/numeric.json?api_key=${this.state.apiKey}`,
+				`https://api.monday.com:443/v1/boards/${
+					this.state.boardID
+				}/columns/numbers7/numeric.json?api_key=${this.state.apiKey}`,
 				{
 					headers: {
 						Accept: "application/json",
@@ -250,8 +290,9 @@ class App extends Component {
 
 	async openBoard() {
 		const response = await fetch(
-			`https://api.monday.com:443/v1/boards/${this.state
-				.boardID}.json?api_key=${this.state.apiKey}`,
+			`https://api.monday.com:443/v1/boards/${
+				this.state.boardID
+			}.json?api_key=${this.state.apiKey}`,
 			{
 				headers: {
 					Accept: "application/json",
@@ -354,9 +395,9 @@ class App extends Component {
 								return (
 									<tr
 										key={pulse.pulse.id}
-										className={`${pulseDone
-											? "table-success"
-											: ""} ${timerRunning ? "" : "table-warning"}`}
+										className={`${pulseDone ? "table-success" : ""} ${
+											timerRunning ? "" : "table-warning"
+										}`}
 									>
 										<td
 											className="text-right"
@@ -377,7 +418,7 @@ class App extends Component {
 											{this.state[`running${pulse.pulse.id}`]
 												? this.state[`running${pulse.pulse.id}`]
 												: Math.round(pulse.column_values[5].value * 1000) /
-													1000}
+												  1000}
 										</td>
 										<td className="text-center">
 											<button
